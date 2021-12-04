@@ -32,7 +32,7 @@ class InputManager {
         this._player?.move(this._moveValue);
 
         if (this._moveValue == 0) {
-
+            this._player?.stopX();
         }
     }
 }

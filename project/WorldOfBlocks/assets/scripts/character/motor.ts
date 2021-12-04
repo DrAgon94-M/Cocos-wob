@@ -1,19 +1,24 @@
 
 import { _decorator, Node, RigidBody2D, Vec2, Vec3, tween } from 'cc';
 import { Attr } from './attr';
+import { PhysicStatus } from './physicStatus';
 
 export class Motor {
 
     private _rb : RigidBody2D;
     private _attr : Attr;
     private _node : Node;
+    private _physicStauts : PhysicStatus;
 
     private _newVelocity : Vec2 = new Vec2(0, 0);
 
-    constructor(rb : RigidBody2D, attr : Attr, node : Node){
+    private _isOneJumped : boolean = false;
+
+    constructor(rb : RigidBody2D, attr : Attr, node : Node, physicStatus : PhysicStatus){
         this._rb = rb;
         this._attr = attr;
         this._node = node;
+        this._physicStauts = physicStatus;
     }
 
     private get _curVelocity(){
@@ -21,6 +26,14 @@ export class Motor {
     }
     private set _curVelocity(value : Vec2){
         this._rb.linearVelocity = value;
+    }
+
+    stop(){
+        this._setVelocity(0, 0);
+    }
+
+    stopX(){
+        this._setVelocity(0, this._curVelocity.y);
     }
 
     /**
@@ -37,8 +50,8 @@ export class Motor {
         this._setVelocity(dirNormalized * this._attr.moveSpeed, this._curVelocity.y);
     }
 
-    stopX(){
-        this._setVelocity(0, this._curVelocity.y);
+    jump(){
+            
     }
 
     private _setVelocity(x : number, y : number){
