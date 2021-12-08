@@ -132,7 +132,6 @@ export class Controller extends Component {
     }
 
     private _onStatic(){
-        console.log(".......")
         this._animation?.stop();
     }
 }
