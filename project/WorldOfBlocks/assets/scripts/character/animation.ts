@@ -1,9 +1,20 @@
 import { IQuatLike, Node, Quat, Size, Tween, tween, UITransform, Vec2, Vec3 } from "cc";
 
+class AnimationInfo{
+    readonly name : string;
+    readonly tween : Tween<Node>;
+
+    constructor(name : string, tween : Tween<Node>){
+        this.name = name;
+        this.tween = tween;
+    }
+}
+
 export class Animation{
     private _model : Node;
     private _uiTransform : UITransform;
 
+    private _curAnims = new Map<number, AnimationInfo>();
     private _curSouce : string = "";
     private _curTween : Tween<Node> | null = null;
     private _curMoveScale : number = 0;

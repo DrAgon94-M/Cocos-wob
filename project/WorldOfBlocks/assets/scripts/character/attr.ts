@@ -1,8 +1,20 @@
 export class Attr{
-    private _moveSpeed = 10;
-
-    get moveSpeed(){
-        return this._moveSpeed;
+    //for controller
+    get toStaticTime(){
+        return 2;
     }
 
+    // for motor
+    get moveSpeed(){
+        return 10;
+    }
+    get oneJumpForce(){
+        return 20;
+    }
+    get oneJumpHeldForce(){
+        return 2.5;
+    }
+    get oneJumpHeldDuration(){
+        return 0.2;
+    }
 }

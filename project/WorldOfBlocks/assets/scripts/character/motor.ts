@@ -1,9 +1,11 @@
 
-import { _decorator, Node, RigidBody2D, Vec2, Vec3, tween } from 'cc';
+import { _decorator, Node, RigidBody2D, Vec2, Vec3, tween, math } from 'cc';
+import { CharacterEvent } from '../eventEnum';
+import { EventMgr } from '../eventMgr';
 import { Attr } from './attr';
 import { PhysicStatus } from './physicStatus';
 
-export class Motor {
+export class Motor extends EventMgr {
 
     private _rb : RigidBody2D;
     private _attr : Attr;
@@ -12,9 +14,11 @@ export class Motor {
 
     private _newVelocity : Vec2 = new Vec2(0, 0);
 
-    private _isOneJumped : boolean = false;
+    private _canJumpHeld : boolean = false;
 
     constructor(rb : RigidBody2D, attr : Attr, node : Node, physicStatus : PhysicStatus){
+        super();
+
         this._rb = rb;
         this._attr = attr;
         this._node = node;
@@ -36,12 +40,15 @@ export class Motor {
         this._setVelocity(0, this._curVelocity.y);
     }
 
+    stopY(){
+        this._setVelocity(this._curVelocity.x, 0);
+    }
+
     /**
      * @param dir [1 ~ -1]的值，既表示方向也表示力度。
      */
     move(dir : number){
         if(dir == 0){
-            this.stopX();
             return;
         }
 
@@ -51,7 +58,21 @@ export class Motor {
     }
 
     jump(){
+        if(this._physicStauts.isOnGround){
+            this._addVelocity(0, this._attr.oneJumpForce);
+            this.emit(CharacterEvent.onOneJumped);
             
+            this._canJumpHeld = true;
+            setTimeout(() => {
+                this._canJumpHeld = false;
+            }, this._attr.oneJumpHeldDuration * 1000);
+        }        
+    }
+
+    jumpHeld(){
+        if(this._canJumpHeld){
+            this._addVelocity(0, this._attr.oneJumpHeldForce)
+        }
     }
 
     private _setVelocity(x : number, y : number){
@@ -60,8 +81,9 @@ export class Motor {
     }
 
     private _addVelocity(x : number, y : number){
-        this._newVelocity.set(x, y);
-        this._curVelocity.add(this._newVelocity);
+        this._newVelocity.set(x + this._curVelocity.x, y + this._curVelocity.y);
+        this._curVelocity = this._newVelocity;
+        //this._curVelocity.add(this._newVelocity);
     }
 
     private _dirNormalized(dir : number){

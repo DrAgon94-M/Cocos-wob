@@ -1,20 +1,47 @@
-import { Node, PhysicsSystem2D, Vec2 } from "cc";
+import { Color, Graphics, Node, PhysicsSystem2D, RaycastResult2D, Vec2 } from "cc";
+import { CharacterEvent } from "../eventEnum";
+import { EventMgr } from "../eventMgr";
+import { Painter } from "../painter";
+import { WOBSystem } from "../wobSystem";
 
-export class PhysicStatus{
+export class PhysicStatus extends EventMgr {
     private _node : Node;
+    private _painter : Painter | null = null;
 
     private _dirDown : Vec2 = new Vec2(0, -1);
-    private _onGroundCheckDis : number = 5;
-    private _isOnGround : Boolean = false;
+    private _onGroundCheckDis : number = 10;
+
+    private _isOnGround : boolean = false;
+
     get isOnGround(){
-        return true
+        return this._isOnGround;
+    }
+
+    private set isOnGround(value : boolean){
+        if(this.isOnGround == value)
+            return;
+
+        if (!this.isOnGround){
+            this.emit(CharacterEvent.fallToGround);
+        }else if(this.isOnGround){
+            this.emit(CharacterEvent.leaveFromGround);
+        }
+
+        this._isOnGround = value;
     }
 
     constructor(node : Node){
+        super();
+    
         this._node = node;
+
+        if(WOBSystem.isEngine)
+            this._painter = new Painter();       
     }
 
     update(){
+        this._painter?.clear();
+
         this._checkIsOnGround();
     }
 
@@ -22,12 +49,31 @@ export class PhysicStatus{
         let start = new Vec2(this._node.worldPosition.x, this._node.worldPosition.y);
         
         if (this._raycast(start, this._dirDown, this._onGroundCheckDis))
-            this._isOnGround = true;
+            this.isOnGround = true;
         else
-            this._isOnGround =false;
+            this.isOnGround = false;
     }
 
     private _raycast(start : Vec2, dir : Vec2, distance : number){
-        return PhysicsSystem2D.instance.raycast(start, dir.normalize().multiplyScalar(distance))
+        let originStart = start.clone();
+        let end = start.add(dir.normalize().multiplyScalar(distance));
+
+        let result = PhysicsSystem2D.instance.raycast(originStart, end);
+        
+        this._showDebugGraphics(result as Array<RaycastResult2D>, originStart, end);
+
+        if(result.length == 0)
+            return null;
+        else
+            return result;
+    }
+
+    private _showDebugGraphics(result : Array<RaycastResult2D>, start : Vec2, end : Vec2){
+        if(result.length > 0)
+            this._painter?.setStrokeColor(Color.RED);
+        else
+            this._painter?.setStrokeColor(Color.GREEN);
+
+        this._painter?.drawLine(start, end);
     }
 }
