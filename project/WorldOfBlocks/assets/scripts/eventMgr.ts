@@ -12,7 +12,7 @@ class ActionEvent {
     }
 }
 
-export class EventMgr {
+export abstract class EventMgr {
     allEvents = new Map<string, Map<number, ActionEvent>>();
 
     addListener(eventName: string, callBack: () => void, target: unknown) {

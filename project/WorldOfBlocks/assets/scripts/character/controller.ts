@@ -17,12 +17,11 @@ export class Controller extends Component {
     private _animation: Animation | null = null;
 
     //temp variables
-    private _curDir: number = 0;
     private _staticTime: number = 0;
 
     get isStatic(){
         if (this._physicStatus?.isOnGround
-            && this._curDir == 0)    
+            && !(this._motor?.isMotioning)) 
             return true;
         else
             return false;
@@ -68,11 +67,10 @@ export class Controller extends Component {
 
         this._checkIsStaticForAWhile(dt);
 
-        if(this.isStaticForAWhile){
+        if(this.isStaticForAWhile)
             this._onStaticForAWhile();
-        }else if(this.isStatic && this._staticTime >= 0.1){
+        else if(this.isStatic)
             this._onStatic();
-        }
     }                
 
     stop() {
@@ -88,12 +86,6 @@ export class Controller extends Component {
     }
 
     move(dir: number) {
-        this._curDir = dir;
-
-        if (dir == 0) {
-            return;
-        }
-
         this._motor?.move(dir);
         this._animation?.playMove(Math.abs(dir));
     }
@@ -132,6 +124,6 @@ export class Controller extends Component {
     }
 
     private _onStatic(){
-        this._animation?.stop();
+        this._animation?.playStop();
     }
 }

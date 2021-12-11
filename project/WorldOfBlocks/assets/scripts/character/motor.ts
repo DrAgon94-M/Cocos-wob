@@ -14,6 +14,7 @@ export class Motor extends EventMgr {
 
     private _newVelocity : Vec2 = new Vec2(0, 0);
 
+    private _curDir : number = 0;
     private _canJumpHeld : boolean = false;
 
     constructor(rb : RigidBody2D, attr : Attr, node : Node, physicStatus : PhysicStatus){
@@ -23,6 +24,12 @@ export class Motor extends EventMgr {
         this._attr = attr;
         this._node = node;
         this._physicStauts = physicStatus;
+    }
+
+    get isMotioning(){
+        return this._curDir != 0 
+            || this._canJumpHeld != false
+            ;
     }
 
     private get _curVelocity(){
@@ -48,6 +55,8 @@ export class Motor extends EventMgr {
      * @param dir [1 ~ -1]的值，既表示方向也表示力度。
      */
     move(dir : number){
+        this._curDir = dir;
+
         if(dir == 0){
             return;
         }
