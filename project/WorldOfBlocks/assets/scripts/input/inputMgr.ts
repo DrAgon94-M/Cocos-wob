@@ -1,7 +1,8 @@
-import { Component, EventKeyboard, KeyCode, SystemEvent, systemEvent, Vec2, _decorator } from "cc";
+import { Component, EventKeyboard, KeyCode, randomRange, SystemEvent, systemEvent, Vec2, _decorator } from "cc";
 import { Controller } from "../character/controller";
 import { DashDir } from "../character/enum";
 import { GameMgr } from "../gameMgr";
+import { Helper } from "../tools/helper";
 import { KBInput } from "./kbInput";
 
 const { ccclass, property } = _decorator;
@@ -68,13 +69,29 @@ class InputManager {
             this._player?.dash(this._curDashDir());
         }
     }
+    private _dashDirKey = new Array<number>();
 
     private _curDashDir() {
 
-        return new Vec2(0, 0);
+        if (this._isSameDir([KeyCode.KEY_A, KeyCode.KEY_W])) 
+            return DashDir.up_left;
+        else if (this._isSameDir([KeyCode.KEY_A, KeyCode.KEY_S]))
+            return DashDir.down_left;
+        else if (this._isSameDir([KeyCode.KEY_D, KeyCode.KEY_W]))
+            return DashDir.up_right;
+        else if(this._isSameDir([KeyCode.KEY_D, KeyCode.KEY_S]))
+            return DashDir.down_right;
+        else if(this._isContainDir(KeyCode.KEY_A))
+            return DashDir.left;
+        else if(this._isContainDir(KeyCode.KEY_D))
+            return DashDir.right;
+        else if(this._isContainDir(KeyCode.KEY_W))
+            return DashDir.up;
+        else if(this._isContainDir(KeyCode.KEY_S))
+            return DashDir.down;
+        
+        return Vec2.ZERO.clone();
     }
-
-    private _dashDirKey = new Array<number>();
 
     private _recordDashDir(keyCode: number) {
 
@@ -105,6 +122,14 @@ class InputManager {
         keyCode == KeyCode.KEY_W ||
         keyCode == KeyCode.KEY_S
         );
+    }
+
+    private _isSameDir(keyArr : Array<number>){
+        return Helper.isSameArray(keyArr, this._dashDirKey);
+    }
+
+    private _isContainDir(key : number){
+        return !!this._dashDirKey.find(v => v == key);
     }
 }
 

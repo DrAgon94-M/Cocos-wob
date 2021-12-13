@@ -132,6 +132,6 @@ export class Controller extends Component {
     }
 
     private _onStatic(){
-        this._animation?.playStop();
+        
     }
 }
