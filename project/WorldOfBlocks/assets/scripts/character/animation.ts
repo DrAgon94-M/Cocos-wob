@@ -2,7 +2,6 @@ import { animation, IQuatLike, Node, Quat, Size, Tween, tween, TweenSystem, UITr
 
 //一些特殊的组，特别标识
 const STOP_OTHER_GROUP = 100;
-const CANT_STOP_GROUP = 101;
 
 class AnimationInfo {
     readonly name: string;
@@ -35,7 +34,7 @@ class AnimationDefine {
     static readonly doubleJumpStart = new AnimationDefineData("doubleJumpStart", 2);
     static readonly doubleJumpRotate = new AnimationDefineData("doubleJumpRotate", 2);
     static readonly fall = new AnimationDefineData("fall", 1);
-    static readonly fallToGround = new AnimationDefineData("fallToGround", CANT_STOP_GROUP);
+    static readonly fallToGround = new AnimationDefineData("fallToGround", 2);
     static readonly dashStart = new AnimationDefineData("dashStart", 1);
     static readonly dashing = new AnimationDefineData("dashing", 1);
     static readonly dashFinish = new AnimationDefineData("dashFinish", 1);
@@ -162,7 +161,6 @@ export class Animation {
     }
     async playFallToGround() {
         await this.playOneJumpStart();
-        console.log("....");
         this._toOriginScale();
     }
 
@@ -172,28 +170,29 @@ export class Animation {
     playDied() { }
 
     private _tween(data: AnimationDefineData) {
-        if (data.group == CANT_STOP_GROUP)
-            return tween(this._model);
-
-        if (this._isShowing(data))
-            return null;
-
-        if (data.group == STOP_OTHER_GROUP)
-            this._stopAllAnim();
-        else
-            this._stopOldAnim(data.group);
-
-        return this._startNewAnim(data).tween;
+        return this._tween2(data.name, data.group);
     }
 
-    private _isShowing(data: AnimationDefineData) {
-        let animData = this._curAnims.get(data.group);
+    private _tween2(animName: string, group: number) {
+        if (this._isShowing(animName, group))
+            return null;
+
+        if (group == STOP_OTHER_GROUP)
+            this._stopAllAnim();
+        else
+            this._stopOldAnim(group);
+
+        return this._startNewAnim(new AnimationDefineData(animName, group)).tween;
+    }
+
+    private _isShowing(animName : string, group : number) {
+        let animData = this._curAnims.get(group);
         //如果该缓动已经播放完了，直接返回false
-        let action = TweenSystem.instance.ActionManager.getActionByTag(data.group, this._model);
+        let action = TweenSystem.instance.ActionManager.getActionByTag(group, this._model);
         if (!action || action.isDone())
             return false;
         //如果没播放完，查看是不是同一个名字，是返回true；否则返回false
-        return animData?.name == data.name;
+        return animData?.name == animName;
     }
 
     private _stopOldAnim(group: number) {
@@ -219,12 +218,16 @@ export class Animation {
             .start();
     }
 
-    private _playScale(){
-
+    private _playScale(scaleX: number, scaleY: number, duration: number = 0.1) {
+        tween(this._model)
+            .to(duration, { scale: new Vec3(0, scaleY, scaleX) })
+            .start();
     }
 
-    private _playRotation(){
-
+    private _playRotation(euler: number, duration: number = 0.1) {
+        tween(this._model)
+            .to(duration, { eulerAngles: new Vec3(0, this._curEuler_Y, euler) })
+            .start();
     }
 
     private _setAnchor(x: number, y: number) {
