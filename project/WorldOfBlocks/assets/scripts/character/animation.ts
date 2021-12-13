@@ -74,8 +74,8 @@ export class Animation {
             this._playRotation("moveInAir", angle, 0.5);
     }
 
-    playOneJumpStart() {
-        return this._playScale("oneJumpStart", this._oneJumpStartScale);
+    async playOneJumpStart() {
+        await this._playScale("oneJumpStart", this._oneJumpStartScale);
     }
 
     async playOneJumpLeaveGround() {
@@ -139,7 +139,7 @@ export class Animation {
     }
 
     private _toOriginRotation(duration ?: number) {
-        if (this._model.eulerAngles.z == this._standEuler)
+        if (this._curEuler_Z == this._standEuler)
             return null;
 
         return this._playRotation("toOriginRotation", this._standEuler, duration);
