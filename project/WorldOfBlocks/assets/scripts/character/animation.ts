@@ -1,4 +1,4 @@
-import { animation, IQuatLike, Node, Quat, Size, Tween, tween, TweenSystem, UITransform, Vec2, Vec3 } from "cc";
+import { Node, Size, Tween, tween, TweenSystem, UITransform, Vec3 } from "cc";
 
 const SCALE_GROUP = 1;
 const ROTATION_GROUP = 2;
@@ -13,29 +13,6 @@ class AnimationInfo {
     }
 }
 
-class AnimationDefineData {
-    readonly name: string;
-    readonly group: number;
-
-    constructor(name: string, group: number) {
-        this.name = name;
-        this.group = group;
-    }
-}
-
-class AnimationDefine {
-    static readonly oneJumpStart = new AnimationDefineData("oneJumpStart", 1);
-    static readonly oneJumpLeaveGround = new AnimationDefineData("oneJumpLeaveGround", 1);
-    static readonly doubleJumpStart = new AnimationDefineData("doubleJumpStart", 2);
-    static readonly doubleJumpRotate = new AnimationDefineData("doubleJumpRotate", 2);
-    static readonly fall = new AnimationDefineData("fall", 1);
-    static readonly fallToGround = new AnimationDefineData("fallToGround", 2);
-    static readonly dashStart = new AnimationDefineData("dashStart", 1);
-    static readonly dashing = new AnimationDefineData("dashing", 1);
-    static readonly dashFinish = new AnimationDefineData("dashFinish", 1);
-    static readonly died = new AnimationDefineData("died", 1);
-}
-
 export class Animation {
     private _model: Node;
     private _uiTransform: UITransform;
@@ -47,6 +24,7 @@ export class Animation {
     private _standEuler: number = 0;
     private _idleScale: Vec3 = new Vec3(0.95, 1.35, 1);
     private _moveMaxAngle: number = 10;
+    private _moveInAirMaxAngle : number = 15;
     private _oneJumpStartScale: Vec3 = new Vec3(1.1, 1.2, 1);
     private _oneJumpLeaveGroundScale: Vec3 = new Vec3(0.7, 1.6, 1);
     private _doubleJumpStartScale: Vec3 = new Vec3(1.15, 1.15, 1);
@@ -59,6 +37,11 @@ export class Animation {
     private get _curEuler_Y() {
         return this._model.eulerAngles.y;
     }
+
+    private get _curEuler_Z(){
+        return this._model.eulerAngles.z;
+    }
+
 
     async playStop() {
 
@@ -78,25 +61,17 @@ export class Animation {
     }
 
     playMove(speedScale: number) {
-        if (speedScale == 0) {
-            this._toOriginRotation();
-            return;
-        }
-
         let angle = speedScale * this._moveMaxAngle;
 
-        this._playRotation("move", -angle);
+        if (this._curEuler_Z != angle)
+            this._playRotation("move", -angle);
     }
 
-    playMoveOnAir(speedScale : number){
-        if (speedScale == 0) {
-            this._toOriginRotation(0.5);
-            return;
-        }
+    playMoveInAir(speedScale : number){
+        let angle = speedScale * this._moveInAirMaxAngle;
 
-        let angle = speedScale * 15;
-
-        this._playRotation("moveOnAir", angle, 0.5);
+        if (this._curEuler_Z != angle)
+            this._playRotation("moveInAir", angle, 0.5);
     }
 
     playOneJumpStart() {
@@ -109,14 +84,13 @@ export class Animation {
     }
 
     async playDoubleJumpStart() {
-        return new Promise<void>((reslove, reject) => {
 
-        });
     }
 
     async playFall() {
 
     }
+
     async playFallToGround() {
         await this.playOneJumpStart();
         return this._toOriginScale();
@@ -133,7 +107,7 @@ export class Animation {
 
         this._stopOldAnim(group);
 
-        return this._startNewAnim(new AnimationDefineData(animName, group)).tween;
+        return this._startNewAnim(animName, group).tween;
     }
 
     private _isShowing(animName: string, group: number) {
@@ -150,10 +124,10 @@ export class Animation {
         this._curAnims.get(group)?.tween.stop();
     }
 
-    private _startNewAnim(data: AnimationDefineData) {
-        let tweenIns = tween(this._model).tag(data.group);
-        let newInfo = new AnimationInfo(data.name, tweenIns);
-        this._curAnims.set(data.group, newInfo);
+    private _startNewAnim(animName: string, group: number) {
+        let tweenIns = tween(this._model).tag(group);
+        let newInfo = new AnimationInfo(animName, tweenIns);
+        this._curAnims.set(group, newInfo);
         return newInfo;
     }
 
