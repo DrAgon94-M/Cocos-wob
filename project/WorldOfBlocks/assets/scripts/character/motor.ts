@@ -84,6 +84,11 @@ export class Motor extends EventMgr {
         }
     }
 
+    dash(dir : Vec2){
+        let force = dir.normalize().multiplyScalar(this._attr.dashForce);
+        this._setVelocity(force.x, force.y);
+    }
+
     private _setVelocity(x : number, y : number){
         this._newVelocity.set(x, y);
         this._curVelocity = this._newVelocity;  

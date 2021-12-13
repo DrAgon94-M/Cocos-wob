@@ -1,5 +1,5 @@
 
-import { _decorator, Component, Node, RigidBody2D, Vec3 } from 'cc';
+import { _decorator, Component, Node, RigidBody2D, Vec3, Vec2 } from 'cc';
 import { CharacterEvent } from '../eventEnum';
 import { Animation } from './animation';
 import { Attr } from './attr';
@@ -98,6 +98,10 @@ export class Controller extends Component {
         this._motor?.jumpHeld();
     }
 
+    dash(dir : Vec2){
+        this._motor?.dash(dir);
+    }
+
     private _registerEvent() {
         this._motor?.addListener(CharacterEvent.onOneJumped, async () => {
             await this._animation?.playOneJumpStart();
@@ -124,6 +128,6 @@ export class Controller extends Component {
     }
 
     private _onStatic(){
-        this._animation?.playStop();
+        //this._animation?.playStop();
     }
 }

@@ -90,6 +90,7 @@ export class Animation {
 
     playMove(speedScale: number) {
         if (speedScale == 0) {
+            this._toOriginRotation();
             return;
         }
 
@@ -160,7 +161,8 @@ export class Animation {
 
     }
     async playFallToGround() {
-        await this.playOneJumpStart()
+        await this.playOneJumpStart();
+        console.log("....");
         this._toOriginScale();
     }
 
@@ -215,6 +217,14 @@ export class Animation {
         this._tween(AnimationDefine.toOriginScale)
             ?.to(0.1, { eulerAngles: this._standEuler })
             .start();
+    }
+
+    private _playScale(){
+
+    }
+
+    private _playRotation(){
+
     }
 
     private _setAnchor(x: number, y: number) {

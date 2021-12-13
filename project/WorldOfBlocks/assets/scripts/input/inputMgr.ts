@@ -1,5 +1,6 @@
-import { Component, KeyCode, _decorator } from "cc";
+import { Component, EventKeyboard, KeyCode, SystemEvent, systemEvent, Vec2, _decorator } from "cc";
 import { Controller } from "../character/controller";
+import { DashDir } from "../character/enum";
 import { GameMgr } from "../gameMgr";
 import { KBInput } from "./kbInput";
 
@@ -11,8 +12,17 @@ class InputManager {
     private _moveValue = 0;
     private _jmuped = false;
     private _jumpHeld = false;
+    private _dashed = false;
     async init() {
         this._kbInput = new KBInput();
+
+        systemEvent.on(SystemEvent.EventType.KEY_DOWN, (e: EventKeyboard) => {
+            this._recordDashDir(e.keyCode);
+        }, this);
+
+        systemEvent.on(SystemEvent.EventType.KEY_UP, (e: EventKeyboard) => {
+            this._deleteDashDirRecord(e.keyCode);
+        }, this);
     }
 
     async lateInit() {
@@ -32,6 +42,9 @@ class InputManager {
             this._jmuped = true;
 
         this._jumpHeld = this._kbInput?.GetKeyDown(KeyCode.SPACE) as boolean;
+
+        if (this._kbInput?.GetKey(KeyCode.SHIFT_LEFT))
+            this._dashed = true;
     }
 
     fixedUpdate() {
@@ -46,9 +59,52 @@ class InputManager {
             this._player?.jump();
         }
 
-        if (this._jumpHeld){
+        if (this._jumpHeld) {
             this._player?.jumpHeld();
         }
+
+        if (this._dashed) {
+            this._dashed = false;
+            this._player?.dash(this._curDashDir());
+        }
+    }
+
+    private _curDashDir() {
+
+        return new Vec2(0, 0);
+    }
+
+    private _dashDirKey = new Array<number>();
+
+    private _recordDashDir(keyCode: number) {
+
+        if(!this._isDashDirKey(keyCode))
+            return;
+
+        //检测按键
+        if (this._dashDirKey.length == 2) {
+            this._dashDirKey.shift();
+        }
+
+        this._dashDirKey.push(keyCode);
+    }
+
+    private _deleteDashDirRecord(keyCode: number) {
+        if(!this._isDashDirKey(keyCode))
+            return;
+
+        this._dashDirKey = this._dashDirKey.filter((value) => {
+            return value != keyCode;
+        })
+    }
+
+    private _isDashDirKey(keyCode : number){
+        return (
+        keyCode == KeyCode.KEY_A ||
+        keyCode == KeyCode.KEY_D ||
+        keyCode == KeyCode.KEY_W ||
+        keyCode == KeyCode.KEY_S
+        );
     }
 }
 
