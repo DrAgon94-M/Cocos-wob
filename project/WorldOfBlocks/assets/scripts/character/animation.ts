@@ -1,8 +1,5 @@
 import { animation, IQuatLike, Node, Quat, Size, Tween, tween, TweenSystem, UITransform, Vec2, Vec3 } from "cc";
 
-//一些特殊的组，特别标识
-const STOP_OTHER_GROUP = 100;
-
 class AnimationInfo {
     readonly name: string;
     readonly tween: Tween<Node>;
@@ -24,10 +21,10 @@ class AnimationDefineData {
 }
 
 class AnimationDefine {
-    static readonly stop = new AnimationDefineData("stop", STOP_OTHER_GROUP);
-    static readonly toOriginScale = new AnimationDefineData("toOriginScale", STOP_OTHER_GROUP);
-    static readonly toOriginRotation = new AnimationDefineData("toOriginRotation", STOP_OTHER_GROUP);
-    static readonly idle = new AnimationDefineData("idle", STOP_OTHER_GROUP);
+    static readonly stop = new AnimationDefineData("stop", 100);
+    static readonly toOriginScale = new AnimationDefineData("toOriginScale", 2);
+    static readonly toOriginRotation = new AnimationDefineData("toOriginRotation", 1);
+    static readonly idle = new AnimationDefineData("idle", 2);
     static readonly move = new AnimationDefineData("move", 1);
     static readonly oneJumpStart = new AnimationDefineData("oneJumpStart", 2);
     static readonly oneJumpLeaveGround = new AnimationDefineData("oneJumpLeaveGround", 2);
@@ -177,10 +174,7 @@ export class Animation {
         if (this._isShowing(animName, group))
             return null;
 
-        if (group == STOP_OTHER_GROUP)
-            this._stopAllAnim();
-        else
-            this._stopOldAnim(group);
+        this._stopOldAnim(group);
 
         return this._startNewAnim(new AnimationDefineData(animName, group)).tween;
     }
