@@ -6,7 +6,7 @@ export class Attr{
 
     // for motor
     get moveSpeed(){
-        return 10;
+        return 15;
     }
     get oneJumpForce(){
         return 20;

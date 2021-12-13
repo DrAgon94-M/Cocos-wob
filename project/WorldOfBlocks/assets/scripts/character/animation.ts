@@ -69,7 +69,7 @@ export class Animation {
             this._toOriginRotation();
         }
 
-        this._tween2("idle", SCALE_GROUP)
+        this._tween("idle", SCALE_GROUP)
             ?.to(0.8, { scale: this._idleScale }, { easing: "cubicOut" })
             .to(0.8, { scale: this._originScale }, { easing: "cubicOut" })
             .union()
@@ -88,21 +88,24 @@ export class Animation {
         this._playRotation("move", -angle);
     }
 
+    playMoveOnAir(speedScale : number){
+        if (speedScale == 0) {
+            this._toOriginRotation(0.5);
+            return;
+        }
+
+        let angle = speedScale * 15;
+
+        this._playRotation("moveOnAir", angle, 0.5);
+    }
+
     playOneJumpStart() {
         return this._playScale("oneJumpStart", this._oneJumpStartScale);
     }
 
     async playOneJumpLeaveGround() {
-        return new Promise<void>((reslove, reject) => {
-            this._tween(AnimationDefine.oneJumpLeaveGround)
-                ?.to(0.1, { scale: this._oneJumpLeaveGroundScale }, {
-                    easing: "linear", onComplete: () => {
-                        reslove();
-                    }
-                })
-                .start();
-
-        });
+        await this._playScale("oneJumpLeaveGround", this._oneJumpLeaveGroundScale);
+        return this._toOriginScale();
     }
 
     async playDoubleJumpStart() {
@@ -116,7 +119,7 @@ export class Animation {
     }
     async playFallToGround() {
         await this.playOneJumpStart();
-        this._toOriginScale();
+        return this._toOriginScale();
     }
 
     playDashStart() { }
@@ -124,11 +127,7 @@ export class Animation {
     playDashFinish() { }
     playDied() { }
 
-    private _tween(data: AnimationDefineData) {
-        return this._tween2(data.name, data.group);
-    }
-
-    private _tween2(animName: string, group: number) {
+    private _tween(animName: string, group: number) {
         if (this._isShowing(animName, group))
             return null;
 
@@ -158,23 +157,23 @@ export class Animation {
         return newInfo;
     }
 
-    private _toOriginScale() {
+    private _toOriginScale(duration ?: number) {
         if (this._model.scale.equals(this._originScale))
             return null;
 
-        return this._playScale("toOriginnScale", this._originScale);
+        return this._playScale("toOriginnScale", this._originScale, duration);
     }
 
-    private _toOriginRotation() {
+    private _toOriginRotation(duration ?: number) {
         if (this._model.eulerAngles.z == this._standEuler)
             return null;
 
-        return this._playRotation("toOriginRotation", this._standEuler);
+        return this._playRotation("toOriginRotation", this._standEuler, duration);
     }
 
     private _playScale(animName: string, scale: Vec3, duration: number = 0.1) {
         return new Promise<void>((resolve, reject) => {
-            this._tween2(animName, SCALE_GROUP)
+            this._tween(animName, SCALE_GROUP)
                 ?.to(duration, { scale: scale }, { easing: "linear", onComplete: () => resolve() })
                 .start();
         });
@@ -182,7 +181,7 @@ export class Animation {
 
     private _playRotation(animName: string, euler: number, duration: number = 0.1) {
         return new Promise<void>((resolve, reject) => {
-            this._tween2(animName, ROTATION_GROUP)
+            this._tween(animName, ROTATION_GROUP)
                 ?.to(duration, { eulerAngles: new Vec3(0, this._curEuler_Y, euler) }, { easing: "linear", onComplete: () => resolve() })
                 .start();
         });

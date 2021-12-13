@@ -87,7 +87,11 @@ export class Controller extends Component {
 
     move(dir: number) {
         this._motor?.move(dir);
-        this._animation?.playMove(Math.abs(dir));
+        
+        if(this._physicStatus?.isOnGround)
+            this._animation?.playMove(Math.abs(dir));
+        else
+            this._animation?.playMoveOnAir(Math.abs(dir));
     }
 
     jump() {
