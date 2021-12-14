@@ -18,6 +18,6 @@ export class Attr{
         return 0.2;
     }
     get dashForce(){
-        return 30;
+        return 50;
     }
 }

@@ -32,23 +32,14 @@ export class Controller extends Component {
     }
 
     onLoad() {
+        let rb = getRb(this.node) as RigidBody2D;
+
         this._attr = new Attr();
-        this._physicStatus = new PhysicStatus(this.node);
-        this._motor = createMotor(this.node, this._attr, this._physicStatus);
+        this._physicStatus = new PhysicStatus(this.node, rb);
+        this._motor = new Motor(rb ,this._attr, this.node, this._physicStatus);
         this._animation = createAnimation(this.node);
 
         this._registerEvent();
-
-        function createMotor(node: Node, attr: Attr, physicStatus: PhysicStatus) {
-            let rb = node.getComponent(RigidBody2D) as RigidBody2D;
-
-            if (!rb) {
-                console.error("本 Controller 物体上没有挂载 Rigidbody2D 组件。")
-                return null;
-            }
-
-            return new Motor(rb, attr, node, physicStatus);
-        }
 
         function createAnimation(node: Node) {
             let model = node.getChildByPath("Model") as Node;
@@ -59,6 +50,17 @@ export class Controller extends Component {
             }
 
             return new Animation(model);
+        }
+
+        function getRb(node : Node){
+            let rb = node.getComponent(RigidBody2D) as RigidBody2D;
+
+            if (!rb) {
+                console.error("本 Controller 物体上没有挂载 Rigidbody2D 组件。")
+                return null;
+            }
+
+            return rb;
         }
     }
 

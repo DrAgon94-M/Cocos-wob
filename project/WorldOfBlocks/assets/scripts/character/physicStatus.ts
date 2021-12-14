@@ -1,4 +1,4 @@
-import { Color, Graphics, Node, PhysicsSystem2D, RaycastResult2D, Vec2 } from "cc";
+import { Color, Graphics, Node, PhysicsSystem2D, RaycastResult2D, RigidBody2D, Vec2 } from "cc";
 import { CharacterEvent } from "../eventEnum";
 import { EventMgr } from "../eventMgr";
 import { Painter } from "../painter";
@@ -6,15 +6,22 @@ import { WOBSystem } from "../wobSystem";
 
 export class PhysicStatus extends EventMgr {
     private _node : Node;
+    private _rb : RigidBody2D;
     private _painter : Painter | null = null;
 
     private _dirDown : Vec2 = new Vec2(0, -1);
     private _onGroundCheckDis : number = 10;
 
     private _isOnGround : boolean = false;
+    private _isUp : boolean = false;
+    private _isFall : boolean = false;
 
     get isOnGround(){
         return this._isOnGround;
+    }
+
+    get isFall(){
+        return this._rb.linearVelocity.y < 0;
     }
 
     private set isOnGround(value : boolean){
@@ -30,10 +37,11 @@ export class PhysicStatus extends EventMgr {
         this._isOnGround = value;
     }
 
-    constructor(node : Node){
+    constructor(node : Node, rb : RigidBody2D){
         super();
     
         this._node = node;
+        this._rb = rb;
 
         if(WOBSystem.isEngine)
             this._painter = new Painter();       

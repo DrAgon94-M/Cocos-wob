@@ -57,9 +57,8 @@ export class Motor extends EventMgr {
     move(dir : number){
         this._curDir = dir;
 
-        if(dir == 0){
+        if(dir == 0)
             return;
-        }
 
         let dirNormalized = this._dirNormalized(dir);
         this._rotate(dirNormalized);

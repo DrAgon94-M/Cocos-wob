@@ -25,7 +25,7 @@ export class Animation {
     private _idleScale: Vec3 = new Vec3(0.95, 1.35, 1);
     private _moveMaxAngle: number = 10;
     private _moveInAirMaxAngle : number = 15;
-    private _oneJumpStartScale: Vec3 = new Vec3(1.1, 1.2, 1);
+    private _oneJumpStartScale: Vec3 = new Vec3(1.2, 1.1, 1);
     private _oneJumpLeaveGroundScale: Vec3 = new Vec3(0.7, 1.6, 1);
     private _doubleJumpStartScale: Vec3 = new Vec3(1.15, 1.15, 1);
 
@@ -75,12 +75,13 @@ export class Animation {
     }
 
     async playOneJumpStart() {
-        await this._playScale("oneJumpStart", this._oneJumpStartScale);
+        await this._playScale("oneJumpStart", this._oneJumpStartScale, .05);
     }
 
     async playOneJumpLeaveGround() {
-        await this._playScale("oneJumpLeaveGround", this._oneJumpLeaveGroundScale);
-        return this._toOriginScale();
+        await this._playScale("oneJumpLeaveGround", this._oneJumpLeaveGroundScale, .05);
+        
+        return this._toOriginScale(0.5);
     }
 
     async playDoubleJumpStart() {
