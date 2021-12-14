@@ -94,9 +94,7 @@ export class Motor extends EventMgr {
     }
 
     private _addVelocity(x : number, y : number){
-        this._newVelocity.set(x + this._curVelocity.x, y + this._curVelocity.y);
-        this._curVelocity = this._newVelocity;
-        //this._curVelocity.add(this._newVelocity);
+        this._setVelocity(x + this._curVelocity.x, y + this._curVelocity.y);
     }
 
     private _dirNormalized(dir : number){

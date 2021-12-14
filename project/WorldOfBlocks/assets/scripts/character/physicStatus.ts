@@ -13,8 +13,6 @@ export class PhysicStatus extends EventMgr {
     private _onGroundCheckDis : number = 10;
 
     private _isOnGround : boolean = false;
-    private _isUp : boolean = false;
-    private _isFall : boolean = false;
 
     get isOnGround(){
         return this._isOnGround;
