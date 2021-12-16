@@ -50,7 +50,7 @@
     },
     "_lscale": {
       "__type__": "cc.Vec3",
-      "x": -1,
+      "x": 1,
       "y": 1,
       "z": 1
     },
@@ -449,7 +449,7 @@
   },
   {
     "__type__": "cc.CompPrefabInfo",
-    "fileId": "5d3KWC++hOE65+nG0K8OtX"
+    "fileId": "56tadIWOxPbosn8mdmmmUX"
   },
   {
     "__type__": "cc.PrefabInfo",

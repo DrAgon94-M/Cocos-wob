@@ -1,5 +1,5 @@
 
-import { _decorator, Component, Node, RigidBody2D, Vec3, Vec2 } from 'cc';
+import { _decorator, Component, Node, RigidBody2D, Vec3, Vec2, BoxCollider, BoxCollider2D } from 'cc';
 import { CharacterEvent } from '../eventEnum';
 import { Animation } from './animation';
 import { Attr } from './attr';
@@ -33,9 +33,10 @@ export class Controller extends Component {
 
     onLoad() {
         let rb = getRb(this.node) as RigidBody2D;
+        let collider = getCollider(this.node) as BoxCollider2D;
 
         this._attr = new Attr();
-        this._physicStatus = new PhysicStatus(this.node, rb);
+        this._physicStatus = new PhysicStatus(this.node, rb, collider);
         this._motor = new Motor(rb ,this._attr, this.node, this._physicStatus);
         this._animation = createAnimation(this.node);
 
@@ -53,7 +54,7 @@ export class Controller extends Component {
         }
 
         function getRb(node : Node){
-            let rb = node.getComponent(RigidBody2D) as RigidBody2D;
+            let rb = node.getComponent(RigidBody2D);
 
             if (!rb) {
                 console.error("本 Controller 物体上没有挂载 Rigidbody2D 组件。")
@@ -61,6 +62,17 @@ export class Controller extends Component {
             }
 
             return rb;
+        }
+
+        function getCollider(node : Node){
+            let collider = node.getComponent(BoxCollider2D);
+
+            if (!collider) {
+                console.error("本 Controller 物体上没有挂载 BoxCollider 组件。")
+                return null;
+            }
+
+            return collider;
         }
     }
 
