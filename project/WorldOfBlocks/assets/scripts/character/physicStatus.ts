@@ -28,16 +28,16 @@ export class PhysicStatus extends EventMgr {
         return this._rb.linearVelocity.y < 0;
     }
 
-    private get curDir(){
+    private get _curDir(){
         return this._node.scale.x;
     }
 
-    private get curWidth(){
-        return this._collider.size.width;
+    private get _curPos(){
+        return this._node.worldPosition;
     }
 
-    private get curHeight(){
-        return this._collider.size.height;
+    private get _curSize(){
+        return this._collider.size;
     }
 
     private set isOnGround(value : boolean){
@@ -73,7 +73,7 @@ export class PhysicStatus extends EventMgr {
     }
 
     private _checkIsOnGround(){
-        let start = new Vec2(this._node.worldPosition.x, this._node.worldPosition.y);
+        let start = new Vec2(this._curPos.x, this._curPos.y);
         
         if (this._raycast(start, this._dirDown, this._checkOnGroundDis))
             this.isOnGround = true;
@@ -82,12 +82,12 @@ export class PhysicStatus extends EventMgr {
     }
 
     private _checkIsHitWall(){
-        let start_x = this._node.worldPosition.x + this.curWidth / 2 * this.curDir
+        let start_x = this._node.worldPosition.x + this._curSize.width / 2 * this._curDir
 
         let start_buttom = new Vec2(start_x, this._node.worldPosition.y + this._checkHitWallOffsetY);
-        let start_top = new Vec2(start_x, this._node.worldPosition.y + this.curHeight - this._checkHitWallOffsetY);
+        let start_top = new Vec2(start_x, this._node.worldPosition.y + this._curSize.height - this._checkHitWallOffsetY);
                                 
-        let dir = new Vec2(this.curDir, 0);
+        let dir = new Vec2(this._curDir, 0);
 
         this._isHitWall = false;
 
