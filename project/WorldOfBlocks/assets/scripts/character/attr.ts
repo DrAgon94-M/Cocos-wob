@@ -20,4 +20,13 @@ export class Attr{
     get dashForce(){
         return 50;
     }
+    get dashDis(){
+        return 400;
+    }
+    get dashDuration(){
+        return 0.2;
+    }
+    get dashFinishForce(){
+        return 20;
+    }
 }

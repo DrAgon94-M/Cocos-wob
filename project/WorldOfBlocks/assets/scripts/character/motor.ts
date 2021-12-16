@@ -1,5 +1,5 @@
 
-import { _decorator, Node, RigidBody2D, Vec2, Vec3, tween, math } from 'cc';
+import { _decorator, Node, RigidBody2D, Vec2, Vec3, tween, math, v3 } from 'cc';
 import { CharacterEvent } from '../eventEnum';
 import { EventMgr } from '../eventMgr';
 import { Attr } from './attr';
@@ -35,6 +35,7 @@ export class Motor extends EventMgr {
     private get _curVelocity(){
         return this._rb.linearVelocity;
     }
+
     private set _curVelocity(value : Vec2){
         this._rb.linearVelocity = value;
     }
@@ -84,8 +85,23 @@ export class Motor extends EventMgr {
     }
 
     dash(dir : Vec2){
-        let force = dir.normalize().multiplyScalar(this._attr.dashForce);
-        this._setVelocity(force.x, force.y);
+        let v3Dir = new Vec3(dir.x, dir.y, 0);
+        console.log("v3Dir", v3Dir)
+        let normalizeDir = v3Dir.clone().normalize();
+        console.log("normalizeDir", normalizeDir);
+        let targetPos = normalizeDir.multiplyScalar(this._attr.dashDis).add(this._node.worldPosition);
+
+        tween(this._node)
+            .to(this._attr.dashDuration, {worldPosition : targetPos}, 
+                {
+                    easing : "linear",
+                    onStart : () => this._setVelocity(0, 0),
+                    onComplete : () => {
+                        v3Dir.multiplyScalar(this._attr.dashFinishForce);
+                        this._setVelocity(v3Dir.x, v3Dir.y)
+                    }
+                })
+            .start();  
     }
 
     private _setVelocity(x : number, y : number){

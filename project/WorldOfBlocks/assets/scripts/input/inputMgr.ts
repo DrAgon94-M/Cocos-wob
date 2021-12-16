@@ -90,7 +90,7 @@ class InputManager {
         else if(this._isContainDir(KeyCode.KEY_S))
             return DashDir.down;
         
-        return Vec2.ZERO.clone();
+        return Vec2.ZERO;
     }
 
     private _recordDashDir(keyCode: number) {
@@ -129,7 +129,12 @@ class InputManager {
     }
 
     private _isContainDir(key : number){
-        return !!this._dashDirKey.find(v => v == key);
+        for (let i = this._dashDirKey.length; i >= 0; i --){
+            if (key == this._dashDirKey[i])
+                return true
+        }
+
+        return false
     }
 }
 

@@ -3,6 +3,7 @@ import { _decorator, Component, Node, RigidBody2D, Vec3, Vec2, BoxCollider, BoxC
 import { CharacterEvent } from '../eventEnum';
 import { Animation } from './animation';
 import { Attr } from './attr';
+import { DashDir } from './enum';
 import { Motor } from './motor';
 import { PhysicStatus } from './physicStatus';
 const { ccclass, property } = _decorator;
@@ -117,6 +118,9 @@ export class Controller extends Component {
     }
 
     dash(dir : Vec2){
+        if (dir == Vec2.ZERO)
+            dir = this.node.scale.x == 1 ? DashDir.right : DashDir.left;
+
         this._motor?.dash(dir);
     }
 
