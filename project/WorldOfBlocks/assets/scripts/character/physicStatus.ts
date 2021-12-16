@@ -11,7 +11,7 @@ export class PhysicStatus extends EventMgr {
     private _painter : Painter | null = null;
 
     private _dirDown : Vec2 = new Vec2(0, -1);
-    private _checkOnGroundDis : number = 10;
+    private _checkDis : number = 10;
     private _checkHitWallOffsetY : number = 10;
     private _isOnGround : boolean = false;
     private _isHitWall : boolean = false;
@@ -75,26 +75,26 @@ export class PhysicStatus extends EventMgr {
     private _checkIsOnGround(){
         let start = new Vec2(this._curPos.x, this._curPos.y);
         
-        if (this._raycast(start, this._dirDown, this._checkOnGroundDis))
+        if (this._raycast(start, this._dirDown, this._checkDis))
             this.isOnGround = true;
         else
             this.isOnGround = false;
     }
 
     private _checkIsHitWall(){
-        let start_x = this._node.worldPosition.x + this._curSize.width / 2 * this._curDir
+        let start_x = this._curPos.x + this._curSize.width / 2 * this._curDir
 
-        let start_buttom = new Vec2(start_x, this._node.worldPosition.y + this._checkHitWallOffsetY);
-        let start_top = new Vec2(start_x, this._node.worldPosition.y + this._curSize.height - this._checkHitWallOffsetY);
+        let start_buttom = new Vec2(start_x, this._curPos.y + this._checkHitWallOffsetY);
+        let start_top = new Vec2(start_x, this._curPos.y + this._curSize.height - this._checkHitWallOffsetY);
                                 
         let dir = new Vec2(this._curDir, 0);
 
         this._isHitWall = false;
 
-        if (this._raycast(start_buttom, dir, this._checkOnGroundDis))
+        if (this._raycast(start_buttom, dir, this._checkDis))
             this._isHitWall = true;
 
-        if (this._raycast(start_top, dir, this._checkOnGroundDis))
+        if (this._raycast(start_top, dir, this._checkDis))
             this._isHitWall = true;
     }
 
