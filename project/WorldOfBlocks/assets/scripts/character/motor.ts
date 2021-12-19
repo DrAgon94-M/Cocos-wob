@@ -86,9 +86,7 @@ export class Motor extends EventMgr {
 
     dash(dir : Vec2){
         let v3Dir = new Vec3(dir.x, dir.y, 0);
-        console.log("v3Dir", v3Dir)
         let normalizeDir = v3Dir.clone().normalize();
-        console.log("normalizeDir", normalizeDir);
         let targetPos = normalizeDir.multiplyScalar(this._attr.dashDis).add(this._node.worldPosition);
 
         tween(this._node)
@@ -102,6 +100,18 @@ export class Motor extends EventMgr {
                     }
                 })
             .start();  
+    }
+
+    dashStart(){
+
+    }
+
+    dashing(){
+        
+    }
+
+    dashEnd(){
+        
     }
 
     private _setVelocity(x : number, y : number){
