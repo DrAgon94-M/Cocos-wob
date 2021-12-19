@@ -1,5 +1,5 @@
 
-import { _decorator, Node, RigidBody2D, Vec2, Vec3, tween, math, v3 } from 'cc';
+import { _decorator, Node, RigidBody2D, Vec2, Vec3, tween, math, v3, debug } from 'cc';
 import { CharacterEvent } from '../eventEnum';
 import { EventMgr } from '../eventMgr';
 import { Helper } from '../tools/helper';
@@ -123,21 +123,22 @@ export class Motor extends EventMgr {
     private _setVelocity(x : number, y : number) : void;
     private _setVelocity(force : Vec2) : void;
     private _setVelocity(arg1 : number | Vec2, arg2 ?: number){
-        if(typeof(arg1) == typeof Vec2){
+        if(arg1 instanceof Vec2){
             let force = arg1 as Vec2;
             this._newVelocity.set(force.x, force.y);
+            this._curVelocity = this._newVelocity;
         }else{
             let forceX = arg1 as number;
             let forceY = arg2 as number;
             this._newVelocity.set(forceX, forceY);
-            this._curVelocity = this._newVelocity;  
+            this._curVelocity = this._newVelocity;          
         }
     }
 
     private _addVelocity(x : number, y : number) : void;
     private _addVelocity(force : Vec2) : void;
     private _addVelocity(arg1 : number | Vec2, arg2 ?: number){
-        if(typeof(arg1) == typeof Vec2){
+        if(arg1 instanceof Vec2){
             let force = arg1 as Vec2;
             this._setVelocity(force.x + this._curVelocity.x, force.y + this._curVelocity.y);
         }else{
@@ -148,7 +149,7 @@ export class Motor extends EventMgr {
     }
 
     private _setVelovity_direct(x : number, y : number){
-        this._newVelocity.set(x, y);
+        
     }
 
     private _dirNormalized(dir : number){
@@ -165,7 +166,7 @@ export class Motor extends EventMgr {
         this._node.scale.set(dir, originScale.y, originScale.z);
     }
 
-    private _ChangeVelocity()[
+    private _ChangeVelocity(){
 
-    ]
+    }
 }
