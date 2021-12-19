@@ -2,20 +2,27 @@
 import { _decorator, Node, RigidBody2D, Vec2, Vec3, tween, math, v3 } from 'cc';
 import { CharacterEvent } from '../eventEnum';
 import { EventMgr } from '../eventMgr';
+import { Helper } from '../tools/helper';
 import { Attr } from './attr';
 import { PhysicStatus } from './physicStatus';
 
 export class Motor extends EventMgr {
 
+    //组件
     private _rb : RigidBody2D;
     private _attr : Attr;
     private _node : Node;
     private _physicStauts : PhysicStatus;
 
+    //临时变量
     private _newVelocity : Vec2 = new Vec2(0, 0);
 
+    //控制变量
+    private _targetVelocity : Vec2 = new Vec2(0, 0);
     private _curDir : number = 0;
     private _canJumpHeld : boolean = false;
+    private _dashForce : Vec2 = new Vec2(0, 0);
+    private _isDashing : boolean = false;
 
     constructor(rb : RigidBody2D, attr : Attr, node : Node, physicStatus : PhysicStatus){
         super();
@@ -38,6 +45,10 @@ export class Motor extends EventMgr {
 
     private set _curVelocity(value : Vec2){
         this._rb.linearVelocity = value;
+    }
+
+    update(){
+        this._dashing();
     }
 
     stop(){
@@ -85,42 +96,59 @@ export class Motor extends EventMgr {
     }
 
     dash(dir : Vec2){
-        let v3Dir = new Vec3(dir.x, dir.y, 0);
-        let normalizeDir = v3Dir.clone().normalize();
-        let targetPos = normalizeDir.multiplyScalar(this._attr.dashDis).add(this._node.worldPosition);
-
-        tween(this._node)
-            .to(this._attr.dashDuration, {worldPosition : targetPos}, 
-                {
-                    easing : "linear",
-                    onStart : () => this._setVelocity(0, 0),
-                    onComplete : () => {
-                        v3Dir.multiplyScalar(this._attr.dashFinishForce);
-                        this._setVelocity(v3Dir.x, v3Dir.y)
-                    }
-                })
-            .start();  
+        if (this._isDashing) return;
+        this._dashStart(dir);
+        Helper.scheduleOnce(() => this._dashEnd(), this._attr.dashDuration);
     }
 
-    dashStart(){
-
+    private _dashStart(dir : Vec2){
+        this._dashForce = dir.clone().normalize().multiplyScalar(this._attr.dashingForce);
+        this._isDashing = true;
+        this._rb.gravityScale = 0;
+        this._setVelocity(0, 0);
     }
 
-    dashing(){
-        
+    private _dashing(){
+        if(this._isDashing){          
+            this._setVelocity(this._dashForce);
+        }
     }
 
-    dashEnd(){
-        
+    private _dashEnd(){
+        this._isDashing = false;
+        this._rb.gravityScale = 1;
+        this._setVelocity(this._dashForce.clone().normalize().multiplyScalar(this._attr.dashFinishForce));
     }
 
-    private _setVelocity(x : number, y : number){
+    private _setVelocity(x : number, y : number) : void;
+    private _setVelocity(force : Vec2) : void;
+    private _setVelocity(arg1 : number | Vec2, arg2 ?: number){
+        if(typeof(arg1) == typeof Vec2){
+            let force = arg1 as Vec2;
+            this._newVelocity.set(force.x, force.y);
+        }else{
+            let forceX = arg1 as number;
+            let forceY = arg2 as number;
+            this._newVelocity.set(forceX, forceY);
+            this._curVelocity = this._newVelocity;  
+        }
+    }
+
+    private _addVelocity(x : number, y : number) : void;
+    private _addVelocity(force : Vec2) : void;
+    private _addVelocity(arg1 : number | Vec2, arg2 ?: number){
+        if(typeof(arg1) == typeof Vec2){
+            let force = arg1 as Vec2;
+            this._setVelocity(force.x + this._curVelocity.x, force.y + this._curVelocity.y);
+        }else{
+            let forceX = arg1 as number;
+            let forceY = arg2 as number;
+            this._setVelocity(forceX + this._curVelocity.x, forceY + this._curVelocity.y);
+        }
+    }
+
+    private _setVelovity_direct(x : number, y : number){
         this._newVelocity.set(x, y);
-        this._curVelocity = this._newVelocity;  
-    }
-
-    private _addVelocity(x : number, y : number){
-        this._setVelocity(x + this._curVelocity.x, y + this._curVelocity.y);
     }
 
     private _dirNormalized(dir : number){
@@ -136,4 +164,8 @@ export class Motor extends EventMgr {
 
         this._node.scale.set(dir, originScale.y, originScale.z);
     }
+
+    private _ChangeVelocity()[
+
+    ]
 }

@@ -17,11 +17,8 @@ export class Attr{
     get oneJumpHeldDuration(){
         return 0.2;
     }
-    get dashForce(){
-        return 50;
-    }
-    get dashDis(){
-        return 400;
+    get dashingForce(){
+        return 60;
     }
     get dashDuration(){
         return 0.2;

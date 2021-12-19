@@ -79,6 +79,7 @@ export class Controller extends Component {
 
     update(dt: number) {
         this._physicStatus?.update();
+        this._motor?.update();
 
         this._checkIsStaticForAWhile(dt);
 

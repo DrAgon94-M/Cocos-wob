@@ -1,4 +1,6 @@
-class GameHelper{
+import { Component, Node } from "cc";
+
+class GameHelper extends Component{
     isSameArray(arr1 : Array<any>, arr2 : Array<any>){
         let result = true;
 
@@ -22,5 +24,7 @@ class GameHelper{
     }
 }
 
-let Helper = new GameHelper();
+let helperNode = new Node("GameHelper");
+let Helper = helperNode.addComponent(GameHelper);
+
 export {Helper};
