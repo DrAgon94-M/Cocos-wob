@@ -23,6 +23,12 @@ export class Motor extends EventMgr {
     private _canJumpHeld : boolean = false;
     private _dashForce : Vec2 = new Vec2(0, 0);
     private _isDashing : boolean = false;
+    private _originDashCount : number = 2;
+    private _remainDashCount : number = 0;
+
+    private get _canDash(){
+        return this._remainDashCount > 0;
+    }
 
     constructor(rb : RigidBody2D, attr : Attr, node : Node, physicStatus : PhysicStatus){
         super();
@@ -49,6 +55,10 @@ export class Motor extends EventMgr {
 
     update(){
         this._dashing();
+
+        //第二个条件「!this._isDashing」是因为有时候起跳了但是检测还没离开地面，会在第一次冲刺的一瞬间刷新次数，导致可以多冲刺一次
+        if (this._physicStauts.isOnGround && !this._isDashing)
+            this._refreshDashCount();
     }
 
     stop(){
@@ -96,7 +106,7 @@ export class Motor extends EventMgr {
     }
 
     dash(dir : Vec2){
-        if (this._isDashing) return;
+        if (!this._canDash || this._isDashing) return;
         this._dashStart(dir);
         Helper.scheduleOnce(() => this._dashEnd(), this._attr.dashDuration);
     }
@@ -106,6 +116,7 @@ export class Motor extends EventMgr {
         this._isDashing = true;
         this._rb.gravityScale = 0;
         this._setVelocity(0, 0);
+        this._remainDashCount--;
     }
 
     private _dashing(){
@@ -118,6 +129,10 @@ export class Motor extends EventMgr {
         this._isDashing = false;
         this._rb.gravityScale = 1;
         this._setVelocity(this._dashForce.clone().normalize().multiplyScalar(this._attr.dashFinishForce));
+    }
+
+    private _refreshDashCount(){
+        this._remainDashCount = this._originDashCount;
     }
 
     private _setVelocity(x : number, y : number) : void;
