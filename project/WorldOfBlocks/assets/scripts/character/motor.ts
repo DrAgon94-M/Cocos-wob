@@ -18,7 +18,7 @@ export class Motor extends EventMgr {
     private _newVelocity : Vec2 = new Vec2(0, 0);
 
     //控制变量
-    private _targetVelocity : Vec2 = new Vec2(0, 0);
+    private _targetVelocityX : number = 0;
     private _curDir : number = 0;
     private _canJumpHeld : boolean = false;
     private _dashForce : Vec2 = new Vec2(0, 0);
@@ -49,6 +49,7 @@ export class Motor extends EventMgr {
 
     update(){
         this._dashing();
+        //this._toTargetValue();
     }
 
     stop(){
@@ -56,7 +57,8 @@ export class Motor extends EventMgr {
     }
 
     stopX(){
-        this._setVelocity(0, this._curVelocity.y);
+        //this._targetVelocity.set(0, this._curVelocity.y);
+        this._setVelocity(0, this._curVelocity.y)
     }
 
     stopY(){
@@ -123,16 +125,21 @@ export class Motor extends EventMgr {
     private _setVelocity(x : number, y : number) : void;
     private _setVelocity(force : Vec2) : void;
     private _setVelocity(arg1 : number | Vec2, arg2 ?: number){
+        
+        let forceX : number;
+        let forceY : number;
+
         if(arg1 instanceof Vec2){
             let force = arg1 as Vec2;
-            this._newVelocity.set(force.x, force.y);
-            this._curVelocity = this._newVelocity;
+            forceX = force.x;
+            forceY = force.y;
         }else{
-            let forceX = arg1 as number;
-            let forceY = arg2 as number;
-            this._newVelocity.set(forceX, forceY);
-            this._curVelocity = this._newVelocity;          
+            forceX = arg1 as number;
+            forceY = arg2 as number;       
         }
+
+        this._newVelocity.set(forceX, forceY);
+        this._curVelocity = this._newVelocity;
     }
 
     private _addVelocity(x : number, y : number) : void;
@@ -146,10 +153,6 @@ export class Motor extends EventMgr {
             let forceY = arg2 as number;
             this._setVelocity(forceX + this._curVelocity.x, forceY + this._curVelocity.y);
         }
-    }
-
-    private _setVelovity_direct(x : number, y : number){
-        
     }
 
     private _dirNormalized(dir : number){
@@ -166,7 +169,20 @@ export class Motor extends EventMgr {
         this._node.scale.set(dir, originScale.y, originScale.z);
     }
 
-    private _ChangeVelocity(){
+    private _toTargetValue(){
+        if(this._targetVelocityX == this._curVelocity.x)
+            return
 
+        let step = 2;
+
+        this._setVelocity(
+            calcValue(this._targetVelocityX, this._curVelocity.x, step),
+            this._curVelocity.y
+            );
+
+        function calcValue(target : number, cur : number, step : number){
+            let dir = cur < target ? 1 : -1;
+            return cur + (step * dir);
+        }
     }
 }
