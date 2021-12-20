@@ -49,7 +49,7 @@ export class Motor extends EventMgr {
 
     update(){
         this._dashing();
-        //this._toTargetValue();
+        this._toTargetXValue();
     }
 
     stop(){
@@ -57,8 +57,7 @@ export class Motor extends EventMgr {
     }
 
     stopX(){
-        //this._targetVelocity.set(0, this._curVelocity.y);
-        this._setVelocity(0, this._curVelocity.y)
+        this._targetVelocityX = 0;
     }
 
     stopY(){
@@ -70,10 +69,12 @@ export class Motor extends EventMgr {
      */
     move(dir : number){
         this._curDir = dir;
+        this._targetVelocityX = dir * this._attr.moveSpeed;
 
-        if(dir == 0)
+        if(dir == 0){
             return;
-
+        }
+            
         let dirNormalized = this._dirNormalized(dir);
         this._rotate(dirNormalized);
         this._setVelocity(dirNormalized * this._attr.moveSpeed, this._curVelocity.y);
@@ -169,20 +170,19 @@ export class Motor extends EventMgr {
         this._node.scale.set(dir, originScale.y, originScale.z);
     }
 
-    private _toTargetValue(){
+    private _toTargetXValue(){
         if(this._targetVelocityX == this._curVelocity.x)
             return
 
-        let step = 2;
-
-        this._setVelocity(
-            calcValue(this._targetVelocityX, this._curVelocity.x, step),
-            this._curVelocity.y
-            );
+        let step = 1;
+        let xValue = calcValue(this._targetVelocityX, this._curVelocity.x, step);
+        this._setVelocity(xValue, this._curVelocity.y);
 
         function calcValue(target : number, cur : number, step : number){
             let dir = cur < target ? 1 : -1;
-            return cur + (step * dir);
+            let diff = Math.abs(cur - target);
+            let stepValue = Math.min(step, diff);
+            return cur + stepValue * dir;
         }
     }
 }

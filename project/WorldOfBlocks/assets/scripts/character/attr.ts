@@ -24,6 +24,6 @@ export class Attr{
         return 0.2;
     }
     get dashFinishForce(){
-        return 20;
+        return 30;
     }
 }
