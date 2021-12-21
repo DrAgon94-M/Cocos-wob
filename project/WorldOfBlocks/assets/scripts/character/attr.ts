@@ -26,4 +26,9 @@ export class Attr{
     get dashFinishForce(){
         return 30;
     }
+
+    //操作优化
+    get graceTime(){
+        return 0.1;
+    }
 }

@@ -15,7 +15,7 @@ export class PhysicStatus extends EventMgr {
     private _checkHitWallOffsetY : number = 10;
     private _isOnGround : boolean = false;
     private _isHitWall : boolean = false;
-
+    private _leaveGroundTime : number = 0;
     get isOnGround(){
         return this._isOnGround;
     }
@@ -26,6 +26,10 @@ export class PhysicStatus extends EventMgr {
 
     get isFall(){
         return this._rb.linearVelocity.y < 0;
+    }
+
+    get leaveGroundTime(){
+        return this._leaveGroundTime;
     }
 
     private get _curDir(){
@@ -45,6 +49,7 @@ export class PhysicStatus extends EventMgr {
             return;
 
         if (!this.isOnGround){
+            this._leaveGroundTime = 0;
             this.emit(CharacterEvent.fallToGround);
         }else if(this.isOnGround){
             this.emit(CharacterEvent.leaveFromGround);
@@ -65,17 +70,18 @@ export class PhysicStatus extends EventMgr {
             this._painter = new Painter();       
     }
 
-    update(){
+    update(dt : number){
         this._painter?.clear();
 
         this._checkIsOnGround();
         this._checkIsHitWall();
+        this._recordLeaveGroundTime(dt);
     }
 
     private _checkIsOnGround(){
         let totalWidth = this._curSize.width;
         let cumulativeWidth = -WOBSystem.minUnit; //累加的宽度，初始为负数，因为每次循环是先加一次再发射射线，所以这样才能让第一次为 0
-        let leftMostX = this._curPos.x - totalWidth / 2; //
+        let leftMostX = this._curPos.x - totalWidth / 2;
         let result = false;
 
         while (cumulativeWidth < totalWidth){
@@ -118,7 +124,7 @@ export class PhysicStatus extends EventMgr {
 
         let result = PhysicsSystem2D.instance.raycast(originStart, end);
         
-        this._showDebugGraphics(result as Array<RaycastResult2D>, originStart, end);
+        this._showRay(result as Array<RaycastResult2D>, originStart, end);
 
         if(result.length == 0)
             return null;
@@ -126,12 +132,17 @@ export class PhysicStatus extends EventMgr {
             return result;
     }
 
-    private _showDebugGraphics(result : Array<RaycastResult2D>, start : Vec2, end : Vec2){
+    private _showRay(result : Array<RaycastResult2D>, start : Vec2, end : Vec2){
         if(result.length > 0)
             this._painter?.setStrokeColor(Color.RED);
         else
             this._painter?.setStrokeColor(Color.GREEN);
 
         this._painter?.drawLine(start, end);
+    }
+
+    private _recordLeaveGroundTime(dt : number) {
+        if(!this.isOnGround)
+            this._leaveGroundTime += dt;
     }
 }

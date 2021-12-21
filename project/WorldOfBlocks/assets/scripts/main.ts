@@ -23,6 +23,7 @@ export class Controller extends Component {
         InputMgr.init();
 
     }
+
     lateInit(){
         GameMgr.lateInit();
         InputMgr.lateInit();
@@ -42,6 +43,6 @@ export class Controller extends Component {
     }
 
     tempTest(){
-        CameraMgr.setFollow(GameMgr.player.node);
+        CameraMgr.setFollow(GameMgr.player.node); //FIXME 这句话应该放在关卡管理者里
     }
 }

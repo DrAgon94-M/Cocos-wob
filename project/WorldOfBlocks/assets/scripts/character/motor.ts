@@ -91,15 +91,15 @@ export class Motor extends EventMgr {
         this._rotate(dirNormalized);
     }
 
-    jump(){
-        if(this._physicStauts.isOnGround){
+    jump(isInGraceTime : boolean){
+        if(this._physicStauts.isOnGround || isInGraceTime){
             this._addVelocity(0, this._attr.oneJumpForce);
             this.emit(CharacterEvent.onOneJumped);
             
             this._canJumpHeld = true;
-            setTimeout(() => {
+            Helper.scheduleOnce(() => {
                 this._canJumpHeld = false;
-            }, this._attr.oneJumpHeldDuration * 1000);
+            }, this._attr.oneJumpHeldDuration);
         }        
     }
 

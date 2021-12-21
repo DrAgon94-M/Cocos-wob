@@ -18,7 +18,15 @@ export class Controller extends Component {
     private _animation: Animation | null = null;
 
     //temp variables
-    private _staticTime: number = 0;
+    private _staticDuration: number = 0;
+
+    private _isOneJumped : boolean = false;
+    
+    private get _isInGraceTime() {
+        return this._physicStatus!.leaveGroundTime <= this._attr!.graceTime
+            && !this._isOneJumped
+            ;
+    }
 
     get isStatic(){
         if (this._physicStatus?.isOnGround
@@ -29,7 +37,7 @@ export class Controller extends Component {
     }
 
     get isStaticForAWhile() {
-        return this._staticTime == this._attr!.toStaticTime;
+        return this._staticDuration == this._attr!.toStaticTime;
     }
 
     onLoad() {
@@ -47,7 +55,7 @@ export class Controller extends Component {
             let model = node.getChildByPath("Model") as Node;
 
             if (!model) {
-                console.error("Player 上没有挂载 Model 子物体！");
+                console.error("Player 上没有挂载 Model 子物体!");
                 return null;
             }
 
@@ -78,7 +86,7 @@ export class Controller extends Component {
     }
 
     update(dt: number) {
-        this._physicStatus?.update();
+        this._physicStatus?.update(dt);
         this._motor?.update();
 
         this._checkIsStaticForAWhile(dt);
@@ -111,7 +119,7 @@ export class Controller extends Component {
     }
 
     jump() {
-        this._motor?.jump();
+        this._motor?.jump(this._isInGraceTime);
     }
 
     jumpHeld() {
@@ -127,22 +135,24 @@ export class Controller extends Component {
 
     private _registerEvent() {
         this._motor?.addListener(CharacterEvent.onOneJumped, async () => {
+            this._isOneJumped = true;
             await this._animation?.playOneJumpStart();
             await this._animation?.playOneJumpLeaveGround();
         }, this);
 
         this._physicStatus?.addListener(CharacterEvent.fallToGround, async () => {
+            this._isOneJumped = false;
             await this._animation?.playFallToGround();
         }, this);
     }
 
     private _checkIsStaticForAWhile(delatTime: number) {
         if (!this.isStatic) {
-            this._staticTime = 0;
+            this._staticDuration = 0;
         }
         else {
-            this._staticTime += delatTime;
-            this._staticTime = Math.min(this._attr!.toStaticTime, this._staticTime);
+            this._staticDuration += delatTime;
+            this._staticDuration = Math.min(this._attr!.toStaticTime, this._staticDuration);
         }
     }
 
