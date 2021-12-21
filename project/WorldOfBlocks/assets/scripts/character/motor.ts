@@ -18,7 +18,6 @@ export class Motor extends EventMgr {
     private _newVelocity : Vec2 = new Vec2(0, 0);
 
     //控制变量
-
     private _targetVelocityX : number = 0;
     private _curDir : number = 0;
     private _canJumpHeld : boolean = false;
@@ -93,7 +92,7 @@ export class Motor extends EventMgr {
 
     jump(isInGraceTime : boolean){
         if(this._physicStauts.isOnGround || isInGraceTime){
-            this._addVelocity(0, this._attr.oneJumpForce);
+            this._setVelocity(this._curVelocity.x, this._attr.oneJumpForce);
             this.emit(CharacterEvent.onOneJumped);
             
             this._canJumpHeld = true;

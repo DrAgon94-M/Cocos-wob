@@ -12,10 +12,10 @@ export class Attr{
         return 20;
     }
     get oneJumpHeldForce(){
-        return 3.8;
+        return 4.3;
     }
     get oneJumpHeldDuration(){
-        return 0.25;
+        return 0.2;
     }
     get dashingForce(){
         return 60;

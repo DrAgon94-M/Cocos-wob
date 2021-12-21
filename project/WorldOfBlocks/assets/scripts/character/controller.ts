@@ -11,15 +11,16 @@ const { ccclass, property } = _decorator;
 @ccclass('CharacterController')
 export class Controller extends Component {
 
-    //components
+    //组件
     private _attr: Attr | null = null;
     private _physicStatus: PhysicStatus | null = null;
     private _motor: Motor | null = null;
     private _animation: Animation | null = null;
 
-    //temp variables
+    //临时变量
     private _staticDuration: number = 0;
 
+    //控制变量
     private _isOneJumped : boolean = false;
     
     private get _isInGraceTime() {
