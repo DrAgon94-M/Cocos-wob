@@ -73,12 +73,26 @@ export class PhysicStatus extends EventMgr {
     }
 
     private _checkIsOnGround(){
-        let start = new Vec2(this._curPos.x, this._curPos.y);
-        
-        if (this._raycast(start, this._dirDown, this._checkDis))
-            this.isOnGround = true;
-        else
-            this.isOnGround = false;
+        let totalWidth = this._curSize.width;
+        let cumulativeWidth = -WOBSystem.minUnit; //累加的宽度，初始为负数，因为每次循环是先加一次再发射射线，所以这样才能让第一次为 0
+        let leftMostX = this._curPos.x - totalWidth / 2; //
+        let result = false;
+
+        while (cumulativeWidth < totalWidth){
+            cumulativeWidth = Math.min(cumulativeWidth + WOBSystem.minUnit, totalWidth);
+
+            let start = new Vec2(leftMostX + cumulativeWidth, this._curPos.y);
+
+            if (this._raycast(start, this._dirDown, this._checkDis))
+            {
+                result = true;
+                break; //如果有任何一根射线检测到了，直接返回不再检测
+            }
+            else
+                result = false;  
+        }
+
+        this.isOnGround = result;
     }
 
     private _checkIsHitWall(){
