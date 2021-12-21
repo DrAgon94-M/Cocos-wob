@@ -33,7 +33,7 @@ class GameManager {
 
         let controller = playerNode?.getComponent(Controller) as Controller;
         if (!controller) {
-            console.error("Player预制体上没有挂载 Controller 脚本！");
+            console.error("Player预制体上没有挂载 Controller 脚本!");
             return;
         }
 

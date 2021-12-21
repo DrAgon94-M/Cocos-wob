@@ -61,7 +61,8 @@ export class Motor extends EventMgr {
 
 		//第二个条件「!this._isDashing」是因为有时候起跳了但是检测还没离开地面，会在第一次冲刺的一瞬间刷新次数，导致可以多冲刺一次
         if (this._physicStauts.isOnGround && !this._isDashing)
-            this._refreshDashCount();    }
+            this._refreshDashCount();   
+    }
 
     stop(){
         this._setVelocity(0, 0);
@@ -88,7 +89,6 @@ export class Motor extends EventMgr {
             
         let dirNormalized = this._dirNormalized(dir);
         this._rotate(dirNormalized);
-        this._setVelocity(dirNormalized * this._attr.moveSpeed, this._curVelocity.y);
     }
 
     jump(){
@@ -190,6 +190,9 @@ export class Motor extends EventMgr {
     }
 
     private _toTargetXValue(){
+        if(this._isDashing)
+            return;
+
         if(this._targetVelocityX == this._curVelocity.x)
             return
 

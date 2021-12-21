@@ -6,16 +6,16 @@ export class Attr{
 
     // for motor
     get moveSpeed(){
-        return 15;
+        return 22;
     }
     get oneJumpForce(){
         return 20;
     }
     get oneJumpHeldForce(){
-        return 2.5;
+        return 3.8;
     }
     get oneJumpHeldDuration(){
-        return 0.2;
+        return 0.25;
     }
     get dashingForce(){
         return 60;

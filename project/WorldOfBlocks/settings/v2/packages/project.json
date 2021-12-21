@@ -5,7 +5,10 @@
   },
   "physics": {
     "gravity": {
-      "y": -100
+      "y": -150
+    },
+    "defaultMaterial": {
+      "restitution": 0.1
     }
   }
 }
