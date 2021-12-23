@@ -1,4 +1,5 @@
 import { Component, EventKeyboard, KeyCode, randomRange, SystemEvent, systemEvent, Vec2, _decorator } from "cc";
+import { CameraMgr } from "../cameraMgr";
 import { Controller } from "../character/controller";
 import { DashDir } from "../character/enum";
 import { GameMgr } from "../gameMgr";
@@ -14,6 +15,7 @@ class InputManager {
     private _jmuped = false;
     private _jumpHeld = false;
     private _dashed = false;
+
     async init() {
         this._kbInput = new KBInput();
 
@@ -46,6 +48,16 @@ class InputManager {
 
         if (this._kbInput?.GetKey(KeyCode.SHIFT_LEFT))
             this._dashed = true;
+
+        //FIXME 临时
+        if (this._kbInput?.GetKey(KeyCode.ARROW_UP))
+            CameraMgr.doShakeByAdd(0.25);
+
+        if (this._kbInput?.GetKey(KeyCode.ARROW_DOWN))
+            CameraMgr.doShakeByAdd(-0.25);
+
+        if (this._kbInput?.GetKey(KeyCode.KEY_P))
+            CameraMgr.setFreezeTrauma();
     }
 
     fixedUpdate() {

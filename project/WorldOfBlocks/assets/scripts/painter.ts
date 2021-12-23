@@ -54,6 +54,10 @@ export class Painter{
         this._graphics!.strokeColor = color;
     }
 
+    setLineWidth(width : number){
+        this._graphics!.lineWidth = width;
+    }
+
     private _createGraphics(){
         let graphicsNode = new Node("Painter");
         GameMgr.canvas?.addChild(graphicsNode);

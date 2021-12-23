@@ -22,7 +22,7 @@ export class Animation {
     private _originSize: Size = new Size(100, 100);
     private _originScale: Vec3 = new Vec3(0.96, 1.44, 1);
     private _standEuler: number = 0;
-    private _idleScale: Vec3 = new Vec3(1.5, 1.35, 1);
+    private _idleScale: Vec3 = new Vec3(1.05, 1.35, 1);
     private _moveMaxAngle: number = 10;
     private _moveInAirMaxAngle : number = 15;
     private _oneJumpStartScale: Vec3 = new Vec3(1.26, 1.14, 1);
