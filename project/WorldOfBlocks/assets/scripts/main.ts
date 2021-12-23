@@ -35,7 +35,7 @@ export class Controller extends Component {
     }
 
     lateUpdate(dt : number){
-        CameraMgr.lateUpdate(dt);
+        CameraMgr.update(dt);
     }
 
     fixedUpdate(){
@@ -43,6 +43,6 @@ export class Controller extends Component {
     }
 
     tempTest(){
-        CameraMgr.setFollow(GameMgr.player.node); //FIXME 这句话应该放在关卡管理者里
+        //CameraMgr.setFollow(GameMgr.player.node); //FIXME 这句话应该放在关卡管理者里
     }
 }

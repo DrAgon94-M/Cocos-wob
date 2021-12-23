@@ -20,14 +20,13 @@ export class Animation {
     private _curAnims = new Map<number, AnimationInfo>();
 
     private _originSize: Size = new Size(100, 100);
-    private _originScale: Vec3 = new Vec3(0.9, 1.4, 1);
+    private _originScale: Vec3 = new Vec3(0.96, 1.44, 1);
     private _standEuler: number = 0;
-    private _idleScale: Vec3 = new Vec3(0.95, 1.35, 1);
+    private _idleScale: Vec3 = new Vec3(1.5, 1.35, 1);
     private _moveMaxAngle: number = 10;
     private _moveInAirMaxAngle : number = 15;
-    private _oneJumpStartScale: Vec3 = new Vec3(1.2, 1.1, 1);
-    private _oneJumpLeaveGroundScale: Vec3 = new Vec3(0.7, 1.6, 1);
-    private _doubleJumpStartScale: Vec3 = new Vec3(1.15, 1.15, 1);
+    private _oneJumpStartScale: Vec3 = new Vec3(1.26, 1.14, 1);
+    private _oneJumpLeaveGroundScale: Vec3 = new Vec3(0.76, 1.64, 1);
 
     constructor(model: Node) {
         this._model = model

@@ -10,12 +10,17 @@ class CameraManager {
         this._createCamera();
     }
 
-    lateUpdate(dt: number) {
-        //this._setCameraPos(dt);
+    update(dt: number) {
+        this._setCameraPos(dt);
+        this._setCameraShake(dt);
     }
 
-    setFollow(node: Node) {
+    setFollow(node: Node | null) {
         this._curFollow = node;
+    }
+
+    doShake(truama : number, duration : number){
+
     }
 
     private _createCamera() {
@@ -50,6 +55,14 @@ class CameraManager {
         function setZ(v3: Vec3, z: number) {
             return new Vec3(v3.x, v3.y, z);
         }
+    }
+
+    private _setCameraShake(dt : number){
+
+    }
+
+    private _setTraumaToZero(dt : number){
+        
     }
 }
 
